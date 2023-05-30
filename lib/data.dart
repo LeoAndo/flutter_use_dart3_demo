@@ -1,8 +1,32 @@
 import 'dart:convert';
 
+class Block {
+  final String type;
+  final String text;
+  Block(this.type, this.text);
+
+  factory Block.fromJson(Map<String, dynamic> json) {
+    if (json case {'type': var type, 'text': var text}) {
+      return Block(type, text);
+    } else {
+      throw const FormatException('Unexpected JSON format');
+    }
+  }
+}
+
 class Document {
   final Map<String, Object?> _json;
   Document() : _json = jsonDecode(documentJson);
+
+  List<Block> getBlocks() {
+    if (_json case {'blocks': List blocksJson}) {
+      return <Block>[
+        for (var blockJson in blocksJson) Block.fromJson(blockJson)
+      ];
+    } else {
+      throw const FormatException('Unexpected JSON format');
+    }
+  }
 
   (String, {DateTime modified}) getMetadata() {
     if (_json
