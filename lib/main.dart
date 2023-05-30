@@ -30,20 +30,56 @@ class DocumentScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var (title, :modified) = document.getMetadata(); // New
+    var (title, :modified) = document.getMetadata();
+    var blocks = document.getBlocks(); // New
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(title), // New
+        title: Text(title),
       ),
       body: Column(
         children: [
-          Center(
-            child: Text(
-              'Last modified $modified', // New
+          // New
+          Text('Last modified: $modified'),
+          Expanded(
+            child: ListView.builder(
+              itemCount: blocks.length,
+              itemBuilder: (context, index) {
+                return BlockWidget(block: blocks[index]);
+              },
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class BlockWidget extends StatelessWidget {
+  final Block block;
+
+  const BlockWidget({
+    required this.block,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    TextStyle? textStyle;
+    switch (block.type) {
+      case 'h1':
+        textStyle = Theme.of(context).textTheme.displayMedium;
+      case 'p' || 'checkbox':
+        textStyle = Theme.of(context).textTheme.bodyMedium;
+      case _:
+        textStyle = Theme.of(context).textTheme.bodySmall;
+    }
+
+    return Container(
+      margin: const EdgeInsets.all(8),
+      child: Text(
+        block.text,
+        style: textStyle,
       ),
     );
   }
